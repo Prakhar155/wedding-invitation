@@ -126,10 +126,16 @@
 
     <!-- Background Music Control Toggle Button -->
     <div class="fixed bottom-6 right-6 z-40">
-        <button id="music-toggle" onclick="toggleAudio()" class="w-14 h-14 rounded-full bg-gradient-to-r from-rosePink to-deepRose text-white flex items-center justify-center shadow-2xl border-2 border-gold hover:scale-110 transition-transform duration-300 pulse-pink group focus:outline-none" title="Play Ram Ram Jai Raja Ram Melody">
+        <button id="music-toggle" onclick="toggleAudio()" class="w-14 h-14 rounded-full bg-gradient-to-r from-rosePink to-deepRose text-white flex items-center justify-center shadow-2xl border-2 border-gold hover:scale-110 transition-transform duration-300 pulse-pink group focus:outline-none" title="Play / Pause Wedding Music">
             <i id="music-icon" class="fas fa-music text-xl group-hover:rotate-12 transition-transform"></i>
         </button>
     </div>
+
+    <!-- Background Audio Element -->
+    <audio id="wedding-audio" loop preload="auto">
+        <source src="ReelAudio-20419.mp3" type="audio/mpeg">
+        <source src="wedding-music.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- 1. ROYAL INTERACTIVE ENVELOPE / REVEAL SCREEN OVERLAY -->
     <div id="envelope-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-softPink bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-softPink to-blushPink p-4 transition-all duration-1000">
@@ -451,9 +457,6 @@
 
     </div>
 
-    <!-- Tone.js Web Audio Synthesizer for Ram Ram Jai Raja Ram Devotional Ringtone Melody -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-
     <script>
         // --- 1. REVEAL INVITATION FROM ENVELOPE ---
         function revealInvitation() {
@@ -469,8 +472,8 @@
                 mainContent.classList.add('opacity-100');
             }, 800);
 
-            // Trigger music play automatically on gesture
-            toggleAudio();
+            // Start wedding music upon guest interaction
+            playAudio();
         }
 
         // --- 2. FLOATING PETALS ANIMATION CANVAS (Pink & Gold Theme) ---
@@ -564,56 +567,56 @@
             }, 3200);
         }
 
-        // --- 5. TONE.JS WEB AUDIO "RAM RAM JAI RAJA RAM" MELODY ---
-        let synth = null;
-        let loop = null;
-        let isPlaying = false;
+        // --- 5. WEDDING BACKGROUND AUDIO CONTROLLER ---
+        const weddingAudio = document.getElementById('wedding-audio');
+        const musicIcon = document.getElementById('music-icon');
+        const musicToggleBtn = document.getElementById('music-toggle');
+
+        function updateMusicUI(isPlaying) {
+            if (isPlaying) {
+                if (musicIcon) musicIcon.className = "fas fa-pause text-xl";
+                if (musicToggleBtn) musicToggleBtn.classList.add('pulse-pink');
+            } else {
+                if (musicIcon) musicIcon.className = "fas fa-music text-xl";
+                if (musicToggleBtn) musicToggleBtn.classList.remove('pulse-pink');
+            }
+        }
+
+        function playAudio() {
+            if (!weddingAudio) return;
+            weddingAudio.volume = 0.85;
+            const playPromise = weddingAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    updateMusicUI(true);
+                    showToast('Playing Music', 'Devotional wedding music is playing.', 'fa-music');
+                }).catch(err => {
+                    console.log('Autoplay deferred or prevented by browser:', err);
+                    updateMusicUI(false);
+                });
+            }
+        }
+
+        function pauseAudio() {
+            if (!weddingAudio) return;
+            weddingAudio.pause();
+            updateMusicUI(false);
+            showToast('Music Paused', 'Wedding music has been paused.', 'fa-pause');
+        }
 
         function toggleAudio() {
-            const buttonIcon = document.getElementById('music-icon');
-
-            if (!isPlaying) {
-                Tone.start();
-                if (!synth) {
-                    synth = new Tone.PolySynth(Tone.Synth, {
-                        oscillator: { type: "sine" },
-                        envelope: { attack: 0.1, decay: 0.8, sustain: 0.6, release: 1.2 }
-                    }).toDestination();
-                    synth.volume.value = -8;
-
-                    // "Shri Ram Jai Ram Jai Jai Ram / Ram Ram Jai Raja Ram" Devotional Sitar-like pitch melody notes
-                    const ramNotes = [
-                        { time: "0:0", note: ["G4", "C5"], duration: "4n" }, // Ram
-                        { time: "0:1", note: ["G4", "C5"], duration: "4n" }, // Ram
-                        { time: "0:2", note: ["A4", "C5"], duration: "4n" }, // Jai
-                        { time: "0:3", note: ["G4", "E5"], duration: "4n" }, // Raja
-                        { time: "1:0", note: ["D5", "F5"], duration: "2n" }, // Ram
-                        { time: "1:2", note: ["C5", "E5"], duration: "2n" }, // ...
-                        { time: "2:0", note: ["G4", "C5"], duration: "4n" }, // Shri
-                        { time: "2:1", note: ["A4", "D5"], duration: "4n" }, // Ram
-                        { time: "2:2", note: ["C5", "E5"], duration: "2n" }, // Jai
-                        { time: "3:0", note: ["G4", "C5"], duration: "1m" }  // Ram
-                    ];
-
-                    loop = new Tone.Part((time, value) => {
-                        synth.triggerAttackRelease(value.note, value.duration, time);
-                    }, ramNotes);
-                    loop.loop = true;
-                    loop.loopEnd = "4m";
-                }
-
-                Tone.Transport.bpm.value = 80;
-                Tone.Transport.start();
-                loop.start(0);
-
-                isPlaying = true;
-                buttonIcon.className = "fas fa-pause text-xl";
-                showToast('Playing Melody', 'Ram Ram Jai Raja Ram devotional wedding tune playing.', 'fa-music');
+            if (!weddingAudio) return;
+            if (weddingAudio.paused) {
+                playAudio();
             } else {
-                Tone.Transport.stop();
-                isPlaying = false;
-                buttonIcon.className = "fas fa-music text-xl";
+                pauseAudio();
             }
+        }
+
+        if (weddingAudio) {
+            weddingAudio.addEventListener('play', () => updateMusicUI(true));
+            weddingAudio.addEventListener('pause', () => updateMusicUI(false));
+            weddingAudio.addEventListener('ended', () => updateMusicUI(false));
         }
     </script>
 </body>

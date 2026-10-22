@@ -1,0 +1,17 @@
+{
+  "name": "prakhar-shraddha-wedding-invitation",
+  "version": "1.0.0",
+  "description": "Luxury Indian Wedding Invitation Web Card for Prakhar & Shraddha",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "wedding-invitation",
+    "indian-wedding",
+    "responsive",
+    "vercel"
+  ],
+  "author": "RK-0396",
+  "license": "MIT"
+}
