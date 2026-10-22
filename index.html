@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prakhar & Shraddha - Wedding Invitation</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Great Vibes, Cinzel, Cormorant Garamond, Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rosePink: '#E85A70',
+                        softPink: '#FFF0F3',
+                        blushPink: '#FFD1DC',
+                        deepRose: '#900C3F',
+                        royalMagenta: '#C70039',
+                        gold: '#D4AF37',
+                        lightGold: '#F3E5AB',
+                        warmGold: '#C59B27',
+                        cream: '#FFFFFF',
+                        babyPink: '#F4C2C2',
+                        beige: '#F5F5DC',
+                        pastelGreen: '#C1E1C1',
+                        skyBlue: '#38B6FF',
+                        haldiYellow: '#E6A100'
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        serif: ['Cormorant Garamond', 'serif'],
+                        script: ['Great Vibes', 'cursive'],
+                        sans: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Luxury Pink & White Custom Styling */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #FFF0F3;
+            color: #2C3531;
+            overflow-x: hidden;
+            background-image: radial-gradient(#FFD1DC 0.8px, transparent 0.8px);
+            background-size: 20px 20px;
+        }
+
+        /* Gold Foil Shimmer Text */
+        .gold-shimmer {
+            background: linear-gradient(135deg, #AA771C 0%, #D4AF37 25%, #8B6508 50%, #D4AF37 75%, #AA771C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 1px 4px rgba(212, 175, 55, 0.2);
+        }
+
+        .pink-gradient-text {
+            background: linear-gradient(135deg, #C70039 0%, #E85A70 50%, #900C3F 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glassmorphism Luxury Container */
+        .royal-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 2px solid #D4AF37;
+            box-shadow: 0 15px 35px rgba(232, 90, 112, 0.15), inset 0 0 15px rgba(212, 175, 55, 0.1);
+        }
+
+        /* Falling Petals Canvas */
+        #petal-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 30;
+        }
+
+        /* Envelope / Flap Animation */
+        .envelope-container {
+            perspective: 1000px;
+        }
+
+        /* Pulse glow animation for audio button */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px #E85A70, 0 0 30px #E85A70; }
+            50% { box-shadow: 0 0 25px #FFD1DC, 0 0 40px #E85A70; }
+        }
+        .pulse-pink {
+            animation: pulseGlow 2.5s infinite ease-in-out;
+        }
+
+        /* Traditional Bell / Garland Pattern */
+        .garland-header {
+            background: linear-gradient(to right, #FFF0F3, #FFD1DC, #FFF0F3);
+        }
+    </style>
+</head>
+<body class="relative min-h-screen text-gray-800 bg-softPink selection:bg-blushPink selection:text-deepRose">
+
+    <!-- Canvas for Floating Pink Petals & Gold Sparkles -->
+    <canvas id="petal-canvas"></canvas>
+
+    <!-- Toast Alert Container -->
+    <div id="toast" class="fixed top-6 right-6 z-50 transform translate-x-full transition-transform duration-300 ease-in-out max-w-sm royal-card p-4 rounded-xl border-l-4 border-gold hidden shadow-2xl">
+        <div class="flex items-center space-x-3">
+            <i id="toast-icon" class="fas fa-music text-rosePink text-2xl"></i>
+            <div>
+                <p id="toast-title" class="font-cinzel font-bold text-deepRose text-sm"></p>
+                <p id="toast-message" class="text-xs text-gray-700 mt-0.5"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Music Control Toggle Button -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <button id="music-toggle" onclick="toggleAudio()" class="w-14 h-14 rounded-full bg-gradient-to-r from-rosePink to-deepRose text-white flex items-center justify-center shadow-2xl border-2 border-gold hover:scale-110 transition-transform duration-300 pulse-pink group focus:outline-none" title="Play Ram Ram Jai Raja Ram Melody">
+            <i id="music-icon" class="fas fa-music text-xl group-hover:rotate-12 transition-transform"></i>
+        </button>
+    </div>
+
+    <!-- 1. ROYAL INTERACTIVE ENVELOPE / REVEAL SCREEN OVERLAY -->
+    <div id="envelope-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-softPink bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-softPink to-blushPink p-4 transition-all duration-1000">
+        <div class="text-center max-w-md w-full">
+            <div class="mb-6 animate-bounce text-deepRose">
+                <i class="fas fa-om text-5xl text-gold drop-shadow-md"></i>
+            </div>
+            
+            <!-- Invitation Card Front Seal -->
+            <div class="royal-card p-8 rounded-3xl relative overflow-hidden border-2 border-gold text-center shadow-2xl">
+                <!-- Floral & Ganesha Header -->
+                <div class="flex justify-center items-center space-x-2 text-gold mb-3">
+                    <span>❖</span>
+                    <span class="font-cinzel text-xs tracking-widest uppercase font-bold text-deepRose">|| श्री गणेशाय नमः ||</span>
+                    <span>❖</span>
+                </div>
+
+                <p class="font-script text-4xl text-rosePink mb-2">You're Invited</p>
+                <h1 class="font-cinzel text-3xl sm:text-4xl font-bold pink-gradient-text tracking-wider mb-2">
+                    Prakhar & Shraddha
+                </h1>
+                <p class="font-serif italic text-gray-600 text-sm mb-6">Are tying the knot in a Royal Celebration</p>
+
+                <!-- Wax Seal / Tap to Reveal Button -->
+                <button onclick="revealInvitation()" class="relative group inline-flex items-center justify-center px-8 py-4 overflow-hidden font-cinzel font-bold tracking-widest text-xs sm:text-sm text-white bg-gradient-to-r from-rosePink via-royalMagenta to-deepRose rounded-full shadow-2xl hover:scale-105 transition-all duration-300 border-2 border-gold">
+                    <span class="mr-2"><i class="fas fa-envelope-open-text"></i></span>
+                    <span>TAP TO UNVEIL INVITATION</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN INVITATION CONTENT (Revealed) -->
+    <div id="main-invitation" class="opacity-0 transition-opacity duration-1000">
+
+        <!-- NAV BAR -->
+        <nav class="fixed top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-b border-gold/40 shadow-sm">
+            <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+                <a href="#home" class="font-script text-3xl text-deepRose font-bold">P & S</a>
+                <div class="flex space-x-4 sm:space-x-8 font-cinzel text-xs font-bold text-deepRose uppercase tracking-widest">
+                    <a href="#home" class="hover:text-rosePink transition">Home</a>
+                    <a href="#events" class="hover:text-rosePink transition">Events</a>
+                    <a href="#wardrobe" class="hover:text-rosePink transition">Wardrobe</a>
+                    <a href="#venue" class="hover:text-rosePink transition">Venue</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- SECTION 1: HERO & MAIN INVITATION HEADER -->
+        <section id="home" class="relative pt-28 pb-20 px-4 min-h-screen flex items-center justify-center text-center">
+            
+            <div class="max-w-4xl mx-auto royal-card p-6 sm:p-12 rounded-3xl relative border-2 border-gold">
+                
+                <!-- Ornamental Corner Motifs -->
+                <div class="absolute top-3 left-3 text-gold text-xl">❖</div>
+                <div class="absolute top-3 right-3 text-gold text-xl">❖</div>
+                <div class="absolute bottom-3 left-3 text-gold text-xl">❖</div>
+                <div class="absolute bottom-3 right-3 text-gold text-xl">❖</div>
+
+                <!-- Ganesha Symbol -->
+                <div class="text-gold text-4xl mb-2">
+                    <i class="fas fa-om"></i>
+                </div>
+                <p class="font-serif text-sm tracking-widest uppercase text-deepRose font-bold mb-4">
+                    || श्री गणेशाय नमः ||
+                </p>
+
+                <!-- Traditional Mantra Lines -->
+                <p class="font-serif italic text-rosePink text-xs sm:text-sm font-semibold mb-3">
+                    मङ्गलम् भगवान् विष्णुः, मङ्गलम् गरुडध्वजः। मङ्गलम् पुण्डरीकाक्षः, मङ्गलाय तनो हरिः॥
+                </p>
+
+                <p class="font-serif italic text-gray-700 text-base sm:text-lg mb-2">
+                    Together with their families, request the honor of your presence at the wedding ceremony of
+                </p>
+
+                <!-- Couple Names Header -->
+                <div class="my-6">
+                    <h1 class="font-cinzel text-4xl sm:text-6xl md:text-7xl font-bold pink-gradient-text tracking-wide uppercase">
+                        Prakhar
+                    </h1>
+                    <div class="flex items-center justify-center my-2 space-x-4">
+                        <span class="h-0.5 w-16 bg-gold"></span>
+                        <span class="font-script text-4xl sm:text-6xl text-rosePink">&</span>
+                        <span class="h-0.5 w-16 bg-gold"></span>
+                    </div>
+                    <h1 class="font-cinzel text-4xl sm:text-6xl md:text-7xl font-bold pink-gradient-text tracking-wide uppercase">
+                        Shraddha
+                    </h1>
+                </div>
+
+                <!-- Save The Date & Venue Badge -->
+                <div class="bg-gradient-to-r from-softPink via-blushPink to-softPink text-deepRose py-3 px-8 rounded-2xl inline-block border-2 border-gold shadow-md my-4">
+                    <p class="font-cinzel text-xs tracking-widest uppercase font-bold text-gold">SAVE THE DATE</p>
+                    <p class="font-cinzel text-2xl sm:text-3xl font-bold text-deepRose">3rd December 2026</p>
+                    <p class="text-xs font-sans tracking-wide text-gray-700 mt-1 font-semibold">
+                        <i class="fas fa-map-marker-alt text-rosePink mr-1"></i> Devoliya Resort
+                    </p>
+                </div>
+
+                <!-- LIVE COUNTDOWN TIMER -->
+                <div class="mt-8 pt-8 border-t border-gold/30">
+                    <p class="font-cinzel text-xs uppercase tracking-widest text-deepRose font-bold mb-4">Counting Down To The Wedding</p>
+                    <div class="grid grid-cols-4 gap-2 sm:gap-4 max-w-md mx-auto">
+                        <div class="bg-white p-3 rounded-xl border border-gold/40 shadow-sm">
+                            <span id="days" class="block font-cinzel text-2xl sm:text-4xl font-bold text-deepRose">00</span>
+                            <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Days</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-gold/40 shadow-sm">
+                            <span id="hours" class="block font-cinzel text-2xl sm:text-4xl font-bold text-deepRose">00</span>
+                            <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Hours</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-gold/40 shadow-sm">
+                            <span id="minutes" class="block font-cinzel text-2xl sm:text-4xl font-bold text-deepRose">00</span>
+                            <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Mins</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-gold/40 shadow-sm">
+                            <span id="seconds" class="block font-cinzel text-2xl sm:text-4xl font-bold text-deepRose">00</span>
+                            <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Secs</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 2: EVENTS SCHEDULE CARDS -->
+        <section id="events" class="py-20 px-4 max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="font-script text-4xl text-rosePink block mb-1">Celebrations</span>
+                <h2 class="font-cinzel text-3xl sm:text-4xl text-deepRose font-bold tracking-wider uppercase">Events Schedule</h2>
+                <div class="w-24 h-0.5 bg-gold mx-auto mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- 1. Haldi Ceremony -->
+                <div class="royal-card rounded-3xl p-6 sm:p-8 relative overflow-hidden border-2 border-gold hover:shadow-2xl transition duration-300">
+                    <div class="absolute top-0 right-0 bg-haldiYellow text-white font-cinzel text-xs font-bold py-1.5 px-4 rounded-bl-2xl uppercase tracking-widest shadow">
+                        2nd Dec • Morning
+                    </div>
+                    <div class="w-14 h-14 bg-haldiYellow/15 text-haldiYellow rounded-2xl flex items-center justify-center text-2xl mb-4 border border-haldiYellow">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <h3 class="font-cinzel text-2xl font-bold text-deepRose">Haldi Ceremony</h3>
+                    <p class="font-serif italic text-gray-600 text-sm mb-4">A splash of turmeric, laughter & joyful blessings</p>
+                    
+                    <div class="space-y-2 text-xs font-semibold text-gray-700 bg-softPink/80 p-4 rounded-xl border border-gold/20 mb-4">
+                        <p class="flex items-center"><i class="far fa-calendar-alt text-gold w-5 text-sm"></i> 2nd December 2026</p>
+                        <p class="flex items-center"><i class="far fa-clock text-gold w-5 text-sm"></i> 12:00 PM Onwards</p>
+                        <p class="flex items-center"><i class="fas fa-map-marker-alt text-gold w-5 text-sm"></i> Devoliya Resort</p>
+                    </div>
+
+                    <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Prakhar+%26+Shraddha+Haldi+Ceremony&dates=20261202T063000Z/20261202T100000Z&details=Haldi+Ceremony+at+Devoliya+Resort&location=Devoliya+Resort" target="_blank" rel="noopener noreferrer" class="inline-block text-xs font-cinzel font-bold text-deepRose hover:text-rosePink transition">
+                        <i class="far fa-calendar-plus mr-1"></i> Add to Calendar →
+                    </a>
+                </div>
+
+                <!-- 2. Sangeet Celebration -->
+                <div class="royal-card rounded-3xl p-6 sm:p-8 relative overflow-hidden border-2 border-gold hover:shadow-2xl transition duration-300">
+                    <div class="absolute top-0 right-0 bg-rosePink text-white font-cinzel text-xs font-bold py-1.5 px-4 rounded-bl-2xl uppercase tracking-widest shadow">
+                        2nd Dec • Evening
+                    </div>
+                    <div class="w-14 h-14 bg-rosePink/15 text-rosePink rounded-2xl flex items-center justify-center text-2xl mb-4 border border-rosePink">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3 class="font-cinzel text-2xl font-bold text-deepRose">Sangeet Celebration</h3>
+                    <p class="font-serif italic text-gray-600 text-sm mb-4">An evening of music, dance performances & festivities</p>
+                    
+                    <div class="space-y-2 text-xs font-semibold text-gray-700 bg-softPink/80 p-4 rounded-xl border border-gold/20 mb-4">
+                        <p class="flex items-center"><i class="far fa-calendar-alt text-gold w-5 text-sm"></i> 2nd December 2026</p>
+                        <p class="flex items-center"><i class="far fa-clock text-gold w-5 text-sm"></i> 8:00 PM Onwards</p>
+                        <p class="flex items-center"><i class="fas fa-map-marker-alt text-gold w-5 text-sm"></i> Devoliya Resort</p>
+                    </div>
+
+                    <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Prakhar+%26+Shraddha+Sangeet+Celebration&dates=20261202T143000Z/20261202T183000Z&details=Sangeet+Night+at+Devoliya+Resort&location=Devoliya+Resort" target="_blank" rel="noopener noreferrer" class="inline-block text-xs font-cinzel font-bold text-deepRose hover:text-rosePink transition">
+                        <i class="far fa-calendar-plus mr-1"></i> Add to Calendar →
+                    </a>
+                </div>
+
+                <!-- 3. Tilak / Godbharayi -->
+                <div class="royal-card rounded-3xl p-6 sm:p-8 relative overflow-hidden border-2 border-gold hover:shadow-2xl transition duration-300">
+                    <div class="absolute top-0 right-0 bg-warmGold text-white font-cinzel text-xs font-bold py-1.5 px-4 rounded-bl-2xl uppercase tracking-widest shadow">
+                        3rd Dec • Afternoon
+                    </div>
+                    <div class="w-14 h-14 bg-warmGold/15 text-warmGold rounded-2xl flex items-center justify-center text-2xl mb-4 border border-warmGold">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h3 class="font-cinzel text-2xl font-bold text-deepRose">Tilak / Godbharayi</h3>
+                    <p class="font-serif italic text-gray-600 text-sm mb-4">Auspicious rituals & heartwarming family blessings</p>
+                    
+                    <div class="space-y-2 text-xs font-semibold text-gray-700 bg-softPink/80 p-4 rounded-xl border border-gold/20 mb-4">
+                        <p class="flex items-center"><i class="far fa-calendar-alt text-gold w-5 text-sm"></i> 3rd December 2026</p>
+                        <p class="flex items-center"><i class="far fa-clock text-gold w-5 text-sm"></i> 12:00 PM Onwards</p>
+                        <p class="flex items-center"><i class="fas fa-map-marker-alt text-gold w-5 text-sm"></i> Devoliya Resort</p>
+                    </div>
+
+                    <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Prakhar+%26+Shraddha+Tilak+Godbharayi&dates=20261203T063000Z/20261203T100000Z&details=Tilak+and+Godbharayi+Ceremony&location=Devoliya+Resort" target="_blank" rel="noopener noreferrer" class="inline-block text-xs font-cinzel font-bold text-deepRose hover:text-rosePink transition">
+                        <i class="far fa-calendar-plus mr-1"></i> Add to Calendar →
+                    </a>
+                </div>
+
+                <!-- 4. Wedding Ceremony -->
+                <div class="royal-card rounded-3xl p-6 sm:p-8 relative overflow-hidden border-2 border-gold hover:shadow-2xl transition duration-300 ring-2 ring-rosePink/30">
+                    <div class="absolute top-0 right-0 bg-deepRose text-white font-cinzel text-xs font-bold py-1.5 px-4 rounded-bl-2xl uppercase tracking-widest shadow">
+                        Main Event
+                    </div>
+                    <div class="w-14 h-14 bg-deepRose/15 text-deepRose rounded-2xl flex items-center justify-center text-2xl mb-4 border border-deepRose">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3 class="font-cinzel text-2xl font-bold text-deepRose">Wedding Ceremony</h3>
+                    <p class="font-serif italic text-gray-600 text-sm mb-4">The sacred Phere and union of two hearts</p>
+                    
+                    <div class="space-y-2 text-xs font-semibold text-gray-700 bg-softPink/80 p-4 rounded-xl border border-gold/20 mb-4">
+                        <p class="flex items-center"><i class="far fa-calendar-alt text-gold w-5 text-sm"></i> 3rd December 2026</p>
+                        <p class="flex items-center"><i class="far fa-clock text-gold w-5 text-sm"></i> Evening Auspicious Muhurat</p>
+                        <p class="flex items-center"><i class="fas fa-map-marker-alt text-gold w-5 text-sm"></i> Devoliya Resort</p>
+                    </div>
+
+                    <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Prakhar+%26+Shraddha+Wedding+Ceremony&dates=20261203T120000Z/20261203T180000Z&details=Grand+Wedding+Ceremony&location=Devoliya+Resort" target="_blank" rel="noopener noreferrer" class="inline-block text-xs font-cinzel font-bold text-deepRose hover:text-rosePink transition">
+                        <i class="far fa-calendar-plus mr-1"></i> Add to Calendar →
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 3: WARDROBE GUIDE -->
+        <section id="wardrobe" class="py-16 px-4">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <span class="font-script text-4xl text-rosePink block mb-1">Dress Code</span>
+                    <h2 class="font-cinzel text-3xl sm:text-4xl text-deepRose font-bold tracking-wider uppercase">Wardrobe Guide</h2>
+                    <p class="text-xs text-gray-600 mt-2 font-sans">Help us create beautiful color palettes for our wedding memories!</p>
+                    <div class="w-24 h-0.5 bg-gold mx-auto mt-3"></div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                    <!-- Haldi Dress Code -->
+                    <div class="royal-card p-6 rounded-2xl text-center border-t-4 border-haldiYellow">
+                        <div class="w-12 h-12 bg-haldiYellow/15 text-haldiYellow rounded-full flex items-center justify-center text-xl mx-auto mb-3">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h3 class="font-cinzel font-bold text-lg text-deepRose">Haldi Ceremony</h3>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">Recommended Colors</p>
+                        
+                        <div class="flex items-center justify-center space-x-4 mb-2">
+                            <div class="flex flex-col items-center">
+                                <span class="w-9 h-9 rounded-full bg-skyBlue border border-gray-300 shadow-sm"></span>
+                                <span class="text-[10px] mt-1 font-bold text-gray-700">Sky Blue</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <span class="w-9 h-9 rounded-full bg-yellow-400 border border-gray-300 shadow-sm"></span>
+                                <span class="text-[10px] mt-1 font-bold text-gray-700">Yellow</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <span class="w-9 h-9 rounded-full bg-white border border-gray-300 shadow-sm"></span>
+                                <span class="text-[10px] mt-1 font-bold text-gray-700">White</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sangeet Dress Code (Baby Pink, Beige, Pastel Green) -->
+                    <div class="royal-card p-6 rounded-2xl text-center border-t-4 border-rosePink">
+                        <div class="w-12 h-12 bg-rosePink/15 text-rosePink rounded-full flex items-center justify-center text-xl mx-auto mb-3">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h3 class="font-cinzel font-bold text-lg text-deepRose">Sangeet Celebration</h3>
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">Recommended Palette</p>
+                        
+                        <div class="flex items-center justify-center space-x-4 mb-2">
+                            <div class="flex flex-col items-center">
+                                <span class="w-9 h-9 rounded-full bg-babyPink border border-gray-300 shadow-sm"></span>
+                                <span class="text-[10px] mt-1 font-bold text-gray-700">Baby Pink</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <span class="w-9 h-9 rounded-full bg-beige border border-gray-300 shadow-sm"></span>
+                                <span class="text-[10px] mt-1 font-bold text-gray-700">Beige</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <span class="w-9 h-9 rounded-full bg-pastelGreen border border-gray-300 shadow-sm"></span>
+                                <span class="text-[10px] mt-1 font-bold text-gray-700">Pastel Green</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: VENUE MAP -->
+        <section id="venue" class="py-20 px-4 max-w-5xl mx-auto text-center">
+            <span class="font-script text-4xl text-rosePink block mb-1">Destination</span>
+            <h2 class="font-cinzel text-3xl sm:text-4xl text-deepRose font-bold tracking-wider uppercase">Main Venue</h2>
+            <div class="w-24 h-0.5 bg-gold mx-auto mt-3 mb-10"></div>
+
+            <div class="royal-card p-8 rounded-3xl text-center max-w-2xl mx-auto border-2 border-gold">
+                <div class="w-16 h-16 bg-softPink text-deepRose rounded-full flex items-center justify-center text-3xl mx-auto mb-4 border border-gold">
+                    <i class="fas fa-hotel"></i>
+                </div>
+                <h3 class="font-cinzel text-3xl font-bold text-deepRose mb-2">Devoliya Resort</h3>
+                <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+                    Join us for two magical days of celebration and unforgettable memories at Devoliya Resort.
+                </p>
+
+                <a href="https://maps.google.com/?q=Devoliya+Resort" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-8 py-3.5 bg-gradient-to-r from-rosePink to-deepRose hover:from-deepRose hover:to-rosePink text-white font-cinzel font-bold text-xs uppercase tracking-widest rounded-full transition duration-300 shadow-xl border border-gold">
+                    <i class="fas fa-map-marked-alt mr-2 text-base"></i> Open In Google Maps
+                </a>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="py-12 bg-white text-center text-deepRose px-4 border-t border-gold/30">
+            <p class="font-script text-5xl mb-2 text-rosePink">Prakhar & Shraddha</p>
+            <p class="font-cinzel text-xs uppercase tracking-widest text-deepRose font-bold mb-4">December 2nd & 3rd, 2026 • Devoliya Resort</p>
+            <p class="text-[10px] text-gray-500 uppercase tracking-wider">Awaiting your noble presence with warm love & blessings</p>
+        </footer>
+
+    </div>
+
+    <!-- Tone.js Web Audio Synthesizer for Ram Ram Jai Raja Ram Devotional Ringtone Melody -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <script>
+        // --- 1. REVEAL INVITATION FROM ENVELOPE ---
+        function revealInvitation() {
+            const envelopeScreen = document.getElementById('envelope-screen');
+            const mainContent = document.getElementById('main-invitation');
+            
+            envelopeScreen.style.opacity = '0';
+            envelopeScreen.style.pointerEvents = 'none';
+
+            setTimeout(() => {
+                envelopeScreen.style.display = 'none';
+                mainContent.classList.remove('opacity-0');
+                mainContent.classList.add('opacity-100');
+            }, 800);
+
+            // Trigger music play automatically on gesture
+            toggleAudio();
+        }
+
+        // --- 2. FLOATING PETALS ANIMATION CANVAS (Pink & Gold Theme) ---
+        const canvas = document.getElementById('petal-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const petals = [];
+        const petalColors = ['#FFD1DC', '#E85A70', '#F4C2C2', '#D4AF37', '#FFF0F3'];
+
+        for (let i = 0; i < 35; i++) {
+            petals.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 8 + 5,
+                speedY: Math.random() * 1.2 + 0.6,
+                speedX: Math.sin(Math.random() * Math.PI) * 0.6,
+                angle: Math.random() * 360,
+                color: petalColors[Math.floor(Math.random() * petalColors.length)]
+            });
+        }
+
+        function animatePetals() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            petals.forEach(p => {
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.angle * Math.PI) / 180);
+
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, p.size, p.size / 2, 0, 0, 2 * Math.PI);
+                ctx.fill();
+
+                ctx.restore();
+
+                p.y += p.speedY;
+                p.x += Math.sin(p.y / 30) * 0.5;
+                p.angle += 0.5;
+
+                if (p.y > canvas.height) {
+                    p.y = -10;
+                    p.x = Math.random() * canvas.width;
+                }
+            });
+
+            requestAnimationFrame(animatePetals);
+        }
+        animatePetals();
+
+        // --- 3. COUNTDOWN TIMER (3rd Dec 2026) ---
+        const targetDate = new Date('December 3, 2026 12:00:00').getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('days').innerText = String(days).padStart(2, '0');
+                document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+                document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+            }
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // --- 4. TOAST NOTIFICATION ---
+        function showToast(title, message, iconClass) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-message').innerText = message;
+            document.getElementById('toast-icon').className = `fas ${iconClass} text-rosePink text-xl`;
+
+            toast.classList.remove('hidden', 'translate-x-full');
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3200);
+        }
+
+        // --- 5. TONE.JS WEB AUDIO "RAM RAM JAI RAJA RAM" MELODY ---
+        let synth = null;
+        let loop = null;
+        let isPlaying = false;
+
+        function toggleAudio() {
+            const buttonIcon = document.getElementById('music-icon');
+
+            if (!isPlaying) {
+                Tone.start();
+                if (!synth) {
+                    synth = new Tone.PolySynth(Tone.Synth, {
+                        oscillator: { type: "sine" },
+                        envelope: { attack: 0.1, decay: 0.8, sustain: 0.6, release: 1.2 }
+                    }).toDestination();
+                    synth.volume.value = -8;
+
+                    // "Shri Ram Jai Ram Jai Jai Ram / Ram Ram Jai Raja Ram" Devotional Sitar-like pitch melody notes
+                    const ramNotes = [
+                        { time: "0:0", note: ["G4", "C5"], duration: "4n" }, // Ram
+                        { time: "0:1", note: ["G4", "C5"], duration: "4n" }, // Ram
+                        { time: "0:2", note: ["A4", "C5"], duration: "4n" }, // Jai
+                        { time: "0:3", note: ["G4", "E5"], duration: "4n" }, // Raja
+                        { time: "1:0", note: ["D5", "F5"], duration: "2n" }, // Ram
+                        { time: "1:2", note: ["C5", "E5"], duration: "2n" }, // ...
+                        { time: "2:0", note: ["G4", "C5"], duration: "4n" }, // Shri
+                        { time: "2:1", note: ["A4", "D5"], duration: "4n" }, // Ram
+                        { time: "2:2", note: ["C5", "E5"], duration: "2n" }, // Jai
+                        { time: "3:0", note: ["G4", "C5"], duration: "1m" }  // Ram
+                    ];
+
+                    loop = new Tone.Part((time, value) => {
+                        synth.triggerAttackRelease(value.note, value.duration, time);
+                    }, ramNotes);
+                    loop.loop = true;
+                    loop.loopEnd = "4m";
+                }
+
+                Tone.Transport.bpm.value = 80;
+                Tone.Transport.start();
+                loop.start(0);
+
+                isPlaying = true;
+                buttonIcon.className = "fas fa-pause text-xl";
+                showToast('Playing Melody', 'Ram Ram Jai Raja Ram devotional wedding tune playing.', 'fa-music');
+            } else {
+                Tone.Transport.stop();
+                isPlaying = false;
+                buttonIcon.className = "fas fa-music text-xl";
+            }
+        }
+    </script>
+</body>
+</html>
